@@ -8,9 +8,16 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+
 public class MainActivity extends AppCompatActivity {
 
-    //asociate controller withneeed views
+
+    private static NumberFormat currency = NumberFormat.getCurrencyInstance();
+    private static NumberFormat percent = NumberFormat.getPercentInstance();
+
+
+    //associate controller with needed views
     private EditText amountEditText;
     private TextView amountTextView;
     private TextView totalTextView;
@@ -25,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //connect controller with the widegets
+        //connect controller with the widgets
         amountEditText = (EditText) findViewById(R.id.amountEditText);
         amountTextView = (TextView) findViewById(R.id.amountTextView);
         totalTextView= (TextView) findViewById(R.id.totalTextView);
@@ -36,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
         //define a listener for the amount editText onTextChange
         amountEditText.addTextChangedListener(amountTextChangeListener);
 
-
+        percentSeekBar.setOnSeekBarChangeListener(percentChangeListener);
+//default tip percent
+        currentBill.setTipPercent(0.15);
     }
     private TextWatcher amountTextChangeListener = new TextWatcher() {
         @Override
@@ -53,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             {
                 amountEditText.setText("");
             }
+            amountTextView.setText(currency.format(currentBill.getAmount()));
+
+            updateViews();
 
         }
 
@@ -62,6 +74,32 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private SeekBar.OnSeekBarChangeListener percentChangeListener = new SeekBar.OnSeekBarChangeListener(){
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            currentBill.setTipPercent(i/100.0);
+
+            percentTextView.setText(percent.format(currentBill.getTipPercent()));
+            updateViews();
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+private void updateViews()
+{
+    tipTextView.setText(currency.format(currentBill.getTipAmount()));
+    totalTextView.setText(currency.format(currentBill.getTotalAmount()));
+}
     }
 
 
